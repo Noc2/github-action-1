@@ -1,0 +1,13 @@
+name: 'Node 12 Template Action'
+description: 'Get started with Node actions'
+author: 'GitHub'
+inputs: 
+  pathtocla:
+    description: 'Give a path for storing CLAs in a json file '
+    default: './cla.json'
+  branch:
+    description: 'select a branch where all the CLAs are stored'
+    default: 'master'
+runs:
+  using: 'node12'
+  main: 'lib/main.js'
