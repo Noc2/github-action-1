@@ -3,7 +3,7 @@ import * as core from '@actions/core'
 import { context } from '@actions/github'
 
 export async function lockPullRequest(pullRequestNo: number) {
-    console.log('Locking the Pull Request to safe guard the Pull Request CLA Signatures')
+    core.info('Locking the Pull Request to safe guard the Pull Request CLA Signatures')
     try {
         await octokit.issues.lock(
             {
@@ -12,7 +12,7 @@ export async function lockPullRequest(pullRequestNo: number) {
                 issue_number: pullRequestNo
             }
         )
-        console.log(`successfully locked the pull request ${pullRequestNo}`)
+        core.info(`successfully locked the pull request ${pullRequestNo}`)
     } catch (e) {
         core.error(`failed when locking the pull request `)
 

@@ -5,54 +5,6 @@ import { context } from '@actions/github'
 import signatureWithPRComment from './signatureComment'
 import { CommitterMap, ReactedCommitterMap, LabelName, CommittersDetails } from './interfaces'
 
-function addLabel() {
-    return octokit.issues.addLabels({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        issue_number: context.issue.number,
-        labels: ['CLA Not Signed :worried:']
-    })
-}
-
-async function updateLabel(signed: boolean, labelName: LabelName) {
-    try {
-        const getLabel = await octokit.issues.getLabel({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            name: labelName.current_name
-        })
-        if (getLabel) {
-            return
-        }
-
-    } catch (error) {
-        if (error.status === 404) {
-            if (signed) {
-                labelName = {
-                    current_name: 'CLA Not Signed :worried:',
-                    name: 'CLA signed :smiley:'
-                }
-            }
-            else {
-                labelName = {
-                    current_name: 'CLA signed :smiley:',
-                    name: 'CLA Not Signed :worried:'
-                }
-            }
-            return octokit.issues.updateLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                current_name: labelName.current_name,
-                name: labelName.name
-            })
-
-        }
-        core.setFailed("error when creating a label :" + error)
-
-    }
-
-
-}
 
 
 async function getComment() {
@@ -115,7 +67,7 @@ function prepareAllSignedCommitters(committerMap: CommitterMap, signedInPrCommit
     */
     let ids = new Set(signedInPrCommitters.map(committer => committer.id))
     allSignedCommitters = [...signedInPrCommitters, ...committerMap.signed!.filter(signedCommitter => !ids.has(signedCommitter.id))]
-    console.log("all signed committers after merging  are -------> " + JSON.stringify(allSignedCommitters, null, 2))
+    core.debug("all signed committers after merging " + JSON.stringify(allSignedCommitters, null, 2))
 
     //checking if all the unsigned committers have reacted to the PR comment (this is needed for changing the content of the PR comment to "All committers have signed the CLA")
     let allSignedFlag: boolean = committers.every(committer => allSignedCommitters.some(reactedCommitter => committer.id === reactedCommitter.id))
@@ -152,7 +104,7 @@ export default async function prComment(signed: boolean, committerMap: Committer
                 }
             }
 
-            console.log("allSignedFlag->>>>>>" + reactedCommitters.allSignedFlag)
+            core.debug("allSignedFlag is " + reactedCommitters.allSignedFlag)
 
             committerMap.signed!.push(...reactedCommitters.newSigned)
             committerMap.notSigned = committerMap.notSigned!.filter(committer => !reactedCommitters.newSigned.some(reactedCommitter => committer.id === reactedCommitter.id))
@@ -171,3 +123,54 @@ export default async function prComment(signed: boolean, committerMap: Committer
     }
 
 }
+
+
+// function addLabel() {
+//     return octokit.issues.addLabels({
+//         owner: context.repo.owner,
+//         repo: context.repo.repo,
+//         issue_number: context.issue.number,
+//         labels: ['CLA Not Signed :worried:']
+//     })
+// }
+
+// async function updateLabel(signed: boolean, labelName: LabelName) {
+//     try {
+//         const getLabel = await octokit.issues.getLabel({
+//             owner: context.repo.owner,
+//             repo: context.repo.repo,
+//             name: labelName.current_name
+//         })
+//         if (getLabel) {
+//             return
+//         }
+
+//     } catch (error) {
+//         if (error.status === 404) {
+//             if (signed) {
+//                 labelName = {
+//                     current_name: 'CLA Not Signed :worried:',
+//                     name: 'CLA signed :smiley:'
+//                 }
+//             }
+//             else {
+//                 labelName = {
+//                     current_name: 'CLA signed :smiley:',
+//                     name: 'CLA Not Signed :worried:'
+//                 }
+//             }
+//             return octokit.issues.updateLabel({
+//                 owner: context.repo.owner,
+//                 repo: context.repo.repo,
+//                 current_name: labelName.current_name,
+//                 name: labelName.name
+//             })
+
+//         }
+//         core.setFailed("error when creating a label :" + error)
+
+//     }
+
+
+// }
+

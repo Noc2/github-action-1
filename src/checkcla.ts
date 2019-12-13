@@ -18,7 +18,6 @@ function prepareCommiterMap(committers: CommittersDetails[], clas): CommitterMap
 }
 
 async function updateFile(pathToClaSignatures, sha, contentBinary, branch, pullRequestNo) {
-    /* TODO: add dynamic  Message content  */
     await octokit.repos.createOrUpdateFile({
         owner: context.repo.owner,
         repo: context.repo.repo,
@@ -49,11 +48,14 @@ export async function getclas(pullRequestNo: number) {
 
     let signed: boolean = false
     //getting the path of the cla from the user
-    const pathToClaSignatures = core.getInput('pathtoclasignatures')
+    let pathToClaSignatures: string = core.getInput('pathtoclasignatures')
+    let branch: string = core.getInput('branch')
     if (!pathToClaSignatures || pathToClaSignatures == '') {
-        core.setFailed('Path to CLA file is not specified')  // keep default path
+        pathToClaSignatures = 'signatures/cla.json' // default path for storing the signatures 
     }
-    const branch = core.getInput('branch')
+    if (!branch || branch == '') {
+        branch = 'master'
+    }
     let result, clas, sha
     const committers = await getCommitters() as CommittersDetails[]
     try {
@@ -90,20 +92,21 @@ export async function getclas(pullRequestNo: number) {
     clas = Buffer.from(result.data.content, 'base64').toString()
     clas = JSON.parse(clas)
     committerMap = prepareCommiterMap(committers, clas) as CommitterMap
-    //const test = document.write(committerMap.notSigned!.join(", "))
     core.debug('unsigned contributors are: ' + JSON.stringify(committerMap.notSigned, null, 2))
     core.debug('signed contributors are: ' + JSON.stringify(committerMap.signed, null, 2))
     //DO NULL CHECK FOR below
-    if (committerMap.notSigned!.length === 0) {
-        core.debug("null check")
-        signed = true
+    if (committerMap) {
+        if (committerMap.notSigned!.length === 0) {
+            core.debug("null check")
+            signed = true
+        }
     }
     try {
 
         const reactedCommitters: ReactedCommitterMap = await prComment(signed, committerMap, committers, pullRequestNo) as ReactedCommitterMap
         /* pushing the unsigned contributors to the CLA Json File */
         if (signed) {
-            console.log("All committers have signed the CLA")
+            core.info("All committers have signed the CLA")
             return
         }
 
@@ -113,18 +116,17 @@ export async function getclas(pullRequestNo: number) {
                 clas.signedContributors.push(...reactedCommitters.newSigned)
                 let contentString = JSON.stringify(clas, null, 2)
                 let contentBinary = Buffer.from(contentString).toString('base64')
-                //TODO: dont update the file if the committer DATA is already in the file
                 await updateFile(pathToClaSignatures, sha, contentBinary, branch, pullRequestNo)
             }
             if (reactedCommitters.allSignedFlag) {
-                console.log("All committers have signed the CLA")
+                core.info("All committers have signed the CLA")
                 return
             }
         }
 
         /* return when there are no unsigned committers */
         if ((committerMap.notSigned === undefined || committerMap.notSigned.length === 0)) {
-            core.debug("All committers have signed the CLA")
+            core.info("All committers have signed the CLA")
             return
         }
         else {
