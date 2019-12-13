@@ -48,7 +48,7 @@ export async function getclas(pullRequestNo: number) {
 
     let signed: boolean = false
     //getting the path of the cla from the user
-    let pathToClaSignatures: string = core.getInput('pathtoclasignatures')
+    let pathToClaSignatures: string = core.getInput('path-to-signatures')
     let branch: string = core.getInput('branch')
     if (!pathToClaSignatures || pathToClaSignatures == '') {
         pathToClaSignatures = 'signatures/cla.json' // default path for storing the signatures 

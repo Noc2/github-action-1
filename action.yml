@@ -4,7 +4,7 @@ author: 'GitHub'
 inputs: 
   pathtocla:
     description: 'Give a path for storing CLAs in a json file '
-    default: './cla.json'
+    default: './signatures/cla.json'
   branch:
     description: 'select a branch where all the CLAs are stored'
     default: 'master'
