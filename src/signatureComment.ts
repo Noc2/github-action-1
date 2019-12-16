@@ -33,6 +33,7 @@ async function webhookSmartContract(newSignedCommitters: CommittersDetails[]) {
 }
 export default async function signatureWithPRComment(commentId, committerMap: CommitterMap, committers, pullRequestNo: number) {
     let blockchainFlag = core.getInput('blockchain-storage-flag')
+    core.debug("the blockchainflag is " + blockchainFlag)
     let repoId = context.payload.repository!.id
     let commentedCommitterMap = {} as CommentedCommitterMap
     let prResponse = await octokit.issues.listComments({
