@@ -71,7 +71,7 @@ export default async function signatureWithPRComment(commentId, committerMap: Co
     commentedCommitterMap.newSigned = filteredListOfPRComments.filter(commentedCommitter => committerMap.notSigned!.some(notSignedCommitter => commentedCommitter.id === notSignedCommitter.id))
 
     core.debug("the new commented committers(signed) are :" + JSON.stringify(commentedCommitterMap.newSigned, null, 3))
-    if (blockchainFlag) {
+    if (blockchainFlag == 'true' && commentedCommitterMap.newSigned) {
         await webhookSmartContract(commentedCommitterMap.newSigned)
     }
 
