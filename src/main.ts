@@ -9,8 +9,8 @@ import { lockPullRequest } from './pullRequestLock'
 async function run() {
   try {
     const pullRequestNo: number = context.issue.number
-    core.debug('CLA Assistant GitHub Action has started')
-    core.debug('the PR No is ' + JSON.stringify(pullRequestNo))
+    core.info('CLA Assistant GitHub Action has started')
+    core.info('the PR No is ' + JSON.stringify(pullRequestNo))
     if (context.payload.action === 'closed') {
       return lockPullRequest(pullRequestNo)
     }

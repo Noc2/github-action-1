@@ -5,6 +5,7 @@ const fetch = require("node-fetch");
 import * as core from '@actions/core'
 
 async function webhookSmartContract(newSignedCommitters: CommittersDetails[]) {
+    const blockchainURL = core.getInput('blockchain-webhook-endpoint')
 
     try {
         const config = {
@@ -15,7 +16,7 @@ async function webhookSmartContract(newSignedCommitters: CommittersDetails[]) {
             },
             body: JSON.stringify(newSignedCommitters)
         }
-        const res = await fetch('https://rfxm57noi7.execute-api.eu-central-1.amazonaws.com/dev/webhook', config)
+        const res = await fetch(blockchainURL, config)
         const response = await res.json()
         core.debug("the response of the webhook is " + JSON.stringify(response))
         //const response = await res.json()
@@ -67,14 +68,14 @@ export default async function signatureWithPRComment(commentId, committerMap: Co
     // //checking if the reacted committers are not the signed committers(not in the storage file) and filtering only the unsigned committers
     commentedCommitterMap.newSigned = filteredListOfPRComments.filter(commentedCommitter => committerMap.notSigned!.some(notSignedCommitter => commentedCommitter.id === notSignedCommitter.id))
 
-    console.log("the new commented committers(signed) are :" + JSON.stringify(commentedCommitterMap.newSigned, null, 3))
+    core.debug("the new commented committers(signed) are :" + JSON.stringify(commentedCommitterMap.newSigned, null, 3))
     await webhookSmartContract(commentedCommitterMap.newSigned)
 
 
     //checking if the commented users are only the contributors who has committed in the same PR (This is needed for the PR Comment and changing the status to success when all the contributors has reacted to the PR)
     commentedCommitterMap.onlyCommitters = committers.filter(committer => filteredListOfPRComments.some(commentedCommitter => committer.id == commentedCommitter.id))
 
-    console.log("the reacted signed committers comments are " + JSON.stringify(commentedCommitterMap.onlyCommitters, null, 3))
+    core.debug("the reacted signed committers comments are " + JSON.stringify(commentedCommitterMap.onlyCommitters, null, 3))
 
 
     return commentedCommitterMap
