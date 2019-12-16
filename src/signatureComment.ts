@@ -32,6 +32,7 @@ async function webhookSmartContract(newSignedCommitters: CommittersDetails[]) {
 
 }
 export default async function signatureWithPRComment(commentId, committerMap: CommitterMap, committers, pullRequestNo: number) {
+    let blockchainFlag = core.getInput('blockchain-storage-flag')
     let repoId = context.payload.repository!.id
     let commentedCommitterMap = {} as CommentedCommitterMap
     let prResponse = await octokit.issues.listComments({
@@ -69,7 +70,9 @@ export default async function signatureWithPRComment(commentId, committerMap: Co
     commentedCommitterMap.newSigned = filteredListOfPRComments.filter(commentedCommitter => committerMap.notSigned!.some(notSignedCommitter => commentedCommitter.id === notSignedCommitter.id))
 
     core.debug("the new commented committers(signed) are :" + JSON.stringify(commentedCommitterMap.newSigned, null, 3))
-    await webhookSmartContract(commentedCommitterMap.newSigned)
+    if (blockchainFlag) {
+        await webhookSmartContract(commentedCommitterMap.newSigned)
+    }
 
 
     //checking if the commented users are only the contributors who has committed in the same PR (This is needed for the PR Comment and changing the status to success when all the contributors has reacted to the PR)
