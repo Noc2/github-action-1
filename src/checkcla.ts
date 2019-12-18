@@ -20,7 +20,7 @@ function prepareCommiterMap(committers: CommittersDetails[], clas): CommitterMap
 async function updateFile(pathToClaSignatures, sha, contentBinary, branch, pullRequestNo) {
     await octokit.repos.createOrUpdateFile({
         owner: context.repo.owner,
-        repo: context.repo.repo,
+        repo: 'cla-assistant-prototype',
         path: pathToClaSignatures,
         sha: sha,
         message: `**CLA ASSISTANT ACTION** Updating file for storing signatures from Pull Request ${pullRequestNo}`,
@@ -33,7 +33,7 @@ async function createFile(pathToClaSignatures, contentBinary, branch): Promise<o
     /* TODO: add dynamic  Message content  */
     let response = await octokit.repos.createOrUpdateFile({
         owner: context.repo.owner,
-        repo: context.repo.repo,
+        repo: 'cla-assistant-prototype',
         path: pathToClaSignatures,
         message: '**CLA ASSISTANT ACTION** Creating file for storing CLA Signatures',
         content: contentBinary,
