@@ -61,7 +61,7 @@ export async function getclas(pullRequestNo: number) {
     try {
         result = await octokit.repos.getContents({
             owner: context.repo.owner,
-            repo: context.repo.repo,
+            repo: 'cla-assistant-prototype',
             path: pathToClaSignatures,
             ref: branch
         })
