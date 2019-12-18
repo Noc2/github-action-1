@@ -1,5 +1,5 @@
 import { GitHub } from '@actions/github'
 
-const octokit = new GitHub(process.env.GITHUB_TOKEN as string)
+const octokit = new GitHub(process.env.pat as string)
 
 export default octokit 
