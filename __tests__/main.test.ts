@@ -3,12 +3,15 @@ import * as github from '@actions/github'
 import { context } from '@actions/github'
 import { getclas } from '../src/checkcla'
 import { lockPullRequest } from '../src/pullRequestLock'
+
 import { run } from '../src/main'
 import { mocked } from 'ts-jest/utils'
 
 jest.mock('@actions/core')
 jest.mock('@actions/github')
 jest.mock('../src/pullRequestLock')
+jest.mock('../src/checkcla')
+const mockedGetClas = mocked(getclas)
 const mockedLockPullRequest = mocked(lockPullRequest)
 
 
@@ -50,36 +53,55 @@ describe('Pull request event', () => {
       },
       sha: ''
     }
+
   }
   )
 
   test('the lockPullRequest  method should be called if there is a pull request merge/closed', async () => {
-    //const octokit = new GitHub('token')
-    mockedLockPullRequest.mockImplementation(async () => { })
+
     await run()
-    if (context.payload.action === 'closed') {
-      expect(mockedLockPullRequest).toHaveBeenCalled()
-    }
+    expect(mockedLockPullRequest).toHaveBeenCalled()
+
 
   })
 
-  test('the lockPullRequest  method should not be called if there is a pull request opened', async () => {
-    //const octokit = new GitHub('token')
-    mockedLockPullRequest.mockImplementation(async () => { })
+  test('the checkcla  method should not be called if there is a pull request merge/closed', async () => {
+
     await run()
-    if (context.payload.action === 'opened') {
-      expect(mockedLockPullRequest).not.toHaveBeenCalled()
-    }
+    expect(mockedGetClas).not.toHaveBeenCalled()
+  })
+
+  test('the lockPullRequest  method should not be called if there is a pull request opened', async () => {
+
+    github.context.payload.action = 'opened'
+    await run()
+
+    expect(mockedLockPullRequest).not.toHaveBeenCalled()
+
+  })
+
+  test('the checkcla  method should  be called if there is a pull request opened', async () => {
+
+    github.context.payload.action = 'opened'
+    await run()
+    expect(mockedGetClas).toHaveBeenCalled()
 
   })
 
   test('the lockPullRequest  method should not be called if there is a pull request sync', async () => {
-    //const octokit = new GitHub('token')
-    mockedLockPullRequest.mockImplementation(async () => { })
+
+    github.context.payload.action = 'synchronize'
+
     await run()
-    if (context.payload.action === 'synchronize') {
-      expect(mockedLockPullRequest).not.toHaveBeenCalled()
-    }
+
+    expect(mockedLockPullRequest).not.toHaveBeenCalled()
+
+  })
+
+  test('the checkcla  method should  be called if there is a pull request sync', async () => {
+    github.context.payload.action = 'synchronize'
+    await run()
+    expect(mockedGetClas).toHaveBeenCalled()
 
   })
 
