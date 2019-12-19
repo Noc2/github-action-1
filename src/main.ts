@@ -6,7 +6,7 @@ import { lockPullRequest } from './pullRequestLock'
 
 
 
-async function run() {
+export async function run() {
   try {
     const pullRequestNo: number = context.issue.number
     console.log("the context is " + JSON.stringify(context, null, 2))
