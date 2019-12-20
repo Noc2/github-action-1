@@ -66,7 +66,9 @@ export default async function getCommitters() {
         })
         console.log("the committers of this pr are" + JSON.stringify(committers))
         committers.filter((committer) => {
-            committer.name !== 'github-actions[bot]'
+            if (committer.name != 'github-actions[bot]') {
+                return committer
+            }
         })
         console.log("the committers last push of this pr are" + JSON.stringify(committers))
         return committers
