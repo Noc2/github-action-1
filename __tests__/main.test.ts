@@ -3,7 +3,6 @@ import * as github from '@actions/github'
 import { context } from '@actions/github'
 import { getclas } from '../src/checkcla'
 import { lockPullRequest } from '../src/pullRequestLock'
-
 import { run } from '../src/main'
 import { mocked } from 'ts-jest/utils'
 
@@ -65,7 +64,7 @@ describe('Pull request event', () => {
 
   })
 
-  test('the checkcla  method should not be called if there is a pull request merge/closed', async () => {
+  test('the checkcla  method should not called if there is a pull request merge/closed', async () => {
 
     await run()
     expect(mockedGetClas).not.toHaveBeenCalled()
