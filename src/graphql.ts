@@ -8,6 +8,7 @@ import { CommittersDetails } from './interfaces'
 export default async function getCommitters() {
     try {
         let committers: CommittersDetails[] = []
+        let filteredCommitters: CommittersDetails[] = []
         let response = await octokit.graphql(`
         query($owner:String! $name:String! $number:Int! $cursor:String!){
             repository(owner: $owner, name: $name) {
@@ -65,13 +66,11 @@ export default async function getCommitters() {
             }
         })
         console.log("the committers of this pr are" + JSON.stringify(committers))
-        committers.filter((committer) => {
-            if (committer.name != 'github-actions[bot]') {
-                return committer
-            }
+        filteredCommitters = committers.filter((committer) => {
+            return committer.id !== 41898282
         })
-        console.log("the committers last push of this pr are" + JSON.stringify(committers))
-        return committers
+        console.log("the committers last push of this pr are" + JSON.stringify(filteredCommitters))
+        return filteredCommitters
 
     } catch (e) {
         core.setFailed('graphql call to get the committers details failed:' + e)

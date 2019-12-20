@@ -3,7 +3,6 @@ import { context } from '@actions/github'
 const io = require('@actions/io')
 import { getclas } from './checkcla'
 import { lockPullRequest } from './pullRequestLock'
-import { addEmptyCommit } from './addEmptyCommit'
 
 
 
