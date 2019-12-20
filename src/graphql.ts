@@ -64,6 +64,7 @@ export default async function getCommitters() {
                 committers.push(user)
             }
         })
+        console.log("the committers of this pr are" + JSON.stringify(committers))
         return committers
 
     } catch (e) {
