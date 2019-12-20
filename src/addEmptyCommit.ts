@@ -8,9 +8,8 @@ export async function addEmptyCommit() {
 
         //Do empty commit only when the contributor signs the CLA with the PR comment 
         if (context.payload.comment.body === 'I have read the CLA Document and I hereby sign the CLA') {
-
             try {
-
+                const message = ` @${context.payload.comment.user.login} has signed the CLA `
                 const pullRequestResponse = await octokit.pulls.get({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
@@ -32,23 +31,23 @@ export async function addEmptyCommit() {
                     {
                         owner: context.repo.owner,
                         repo: context.repo.repo,
-                        message: 'test Commit',
+                        message: message,
                         tree: tree.data.sha,
                         parents: [pullRequestResponse.data.head.sha]
                     }
                 )
-                await octokit.git.updateRef({
+                return octokit.git.updateRef({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     ref: `heads/${pullRequestResponse.data.head.ref}`,
                     sha: newCommit.data.sha
                 })
-                core.info(`successfully added empty commit with the contributor's signature name who has signed the CLA`)
+
             } catch (e) {
                 core.error(`failed when adding empty commit  with the contributor's signature name `)
 
             }
         }
     }
-
+    return
 }

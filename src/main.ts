@@ -18,13 +18,7 @@ export async function run() {
     }
     else {
       await getclas(pullRequestNo)
-      //TODO: NULL CHECK
-      // if (context.payload.comment) {
 
-      //   if (context.payload.comment.body === 'I have read the CLA Document and I hereby sign the CLA') {
-      //     await addEmptyCommit()
-      //   }
-      // }
       // const rateLimit = await octokit.rateLimit.get()
       // console.log(JSON.stringify(rateLimit.data.resources, null, 4))
     }

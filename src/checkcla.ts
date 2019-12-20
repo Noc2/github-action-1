@@ -19,6 +19,7 @@ function prepareCommiterMap(committers: CommittersDetails[], clas): CommitterMap
 }
 
 async function updateFile(pathToClaSignatures, sha, contentBinary, branch, pullRequestNo) {
+   
     await octokit.repos.createOrUpdateFile({
         owner: context.repo.owner,
         repo: context.repo.repo,
@@ -28,7 +29,9 @@ async function updateFile(pathToClaSignatures, sha, contentBinary, branch, pullR
         content: contentBinary,
         branch: branch
     })
+    //Do empty commit only when the contributor signs the CLA with the PR comment 
     await addEmptyCommit()
+    core.info(`successfully added empty commit with the contributor's signature name who has signed the CLA`)
 }
 
 async function createFile(pathToClaSignatures, contentBinary, branch): Promise<object> {
