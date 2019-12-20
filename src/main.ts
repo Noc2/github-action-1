@@ -10,7 +10,7 @@ import { addEmptyCommit } from './addEmptyCommit'
 export async function run() {
   try {
     const pullRequestNo: number = context.issue.number
-    console.log("the context is " + JSON.stringify(context, null, 2))
+    //s   console.log("the context is " + JSON.stringify(context, null, 2))
     core.info('CLA Assistant GitHub Action has started')
     core.info('the PR No is ' + JSON.stringify(pullRequestNo))
     if (context.payload.action === 'closed') {

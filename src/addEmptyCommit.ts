@@ -23,7 +23,7 @@ export async function addEmptyCommit() {
             repo: context.repo.repo,
             tree_sha: baseCommit.data.tree.sha
         })
-        await octokit.git.createCommit(
+        const newCommit = await octokit.git.createCommit(
             {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -32,6 +32,12 @@ export async function addEmptyCommit() {
                 parents: [pullRequestResponse.data.head.sha]
             }
         )
+        await octokit.git.updateRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: `heads/${pullRequestResponse.data.head.ref}`,
+            sha: newCommit.data.sha
+        })
         core.info(`successfully added empty commit with the contributor's signature name who has signed the CLA`)
     } catch (e) {
         core.error(`failed when adding empty commit  with the contributor's signature name `)
