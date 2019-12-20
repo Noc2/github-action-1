@@ -3,6 +3,7 @@ import octokit from './octokit'
 import * as core from '@actions/core'
 import { context } from '@actions/github'
 import prComment from './pullRequestComment'
+import { addEmptyCommit } from './addEmptyCommit'
 import { CommitterMap, CommittersDetails, ReactedCommitterMap } from './interfaces'
 
 
@@ -27,6 +28,7 @@ async function updateFile(pathToClaSignatures, sha, contentBinary, branch, pullR
         content: contentBinary,
         branch: branch
     })
+    await addEmptyCommit()
 }
 
 async function createFile(pathToClaSignatures, contentBinary, branch): Promise<object> {
@@ -117,6 +119,7 @@ export async function getclas(pullRequestNo: number) {
                 let contentString = JSON.stringify(clas, null, 2)
                 let contentBinary = Buffer.from(contentString).toString('base64')
                 await updateFile(pathToClaSignatures, sha, contentBinary, branch, pullRequestNo)
+
             }
             if (reactedCommitters.allSignedFlag) {
                 core.info("All committers have signed the CLA")
